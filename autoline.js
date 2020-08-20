@@ -128,5 +128,54 @@ function initialize() {
         }
     }));
 }
+function addEmptyValues(arr, n) {
+    for (var i = 0; i < n; i++) {
+        arr.push({
+            x: moment().subtract((n - i) * speed, 'milliseconds').toDate(),
+            y: v
+        });
+    }
+}
+
+function rescale() {
+    var padding = [];
+
+    addEmptyValues(padding, 10);
+    values.splice.apply(values, padding);
+    scale++;
+}
+
+function updateCharts() {
+    charts.forEach(function (chart) {
+        chart.update();
+    });
+}
+
+function progress() {
+//value = Math.min(Math.max(value + (0.1 - Math.random() / 5), -1), 1);
+    values.push({
+        x: new Date(),
+        y: v
+    });
+
+    values.shift();
+}
+
+function advance() {
+    if (values[0] !== null && scale < 4) {
+        rescale();
+        updateCharts();
+    }
+    progress();
+    updateCharts();
+    setTimeout(function () {
+        requestAnimationFrame(advance);
+    }, speed);
+}
+
+window.onload = function () {
+    initialize();
+    advance();
+};
 
 
