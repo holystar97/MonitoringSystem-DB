@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<title>Dashboard | Klorofil - Free Bootstrap Dashboard Template</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<!-- VENDOR CSS -->
+	<link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/vendor/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="assets/vendor/linearicons/style.css">
+	<link rel="stylesheet" href="assets/vendor/chartist/css/chartist-custom.css">
+	<!-- MAIN CSS -->
+	<link rel="stylesheet" href="assets/css/main.css">
+	<!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
+	<link rel="stylesheet" href="assets/css/demo.css">
+	<!-- GOOGLE FONTS -->
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+	<!-- ICONS -->
+	<link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicon.png">
+
+	<!--tab-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+	<style>
+		canvas {
+			display: inline-block !important;
+		}
+	</style>
+
+	<script>
+		function getIpList(){
+			const url = 'http://127.0.0.1:3000/getIpList';
+			let requestXML = new XMLHttpRequest();
+			requestXML.open('GET', url);
+			requestXML.setRequestHeader('Content-Type', 'text/plain');
+			requestXML.onload = function () {
+				let subscribers = new Array();
+				subscribers = JSON.parse(requestXML.responseText);
+
+				//console.log(subscribers);
+				for(let i = 0; i < subscribers.length; i++) {
+					if(subscribers[i].ip_address == null) {
+						continue;
+					}
+
+					var ipAdress = subscribers[i].ip_address;
+
+					// 원본 찾아서 pre_set으로 저장.
+					var pre_set = document.getElementById('pre_set');
+					// last-id 속성에서 필드ID르 쓸값 찾고
+					var fieldid = pre_set.getAttribute('last-id');
+					// 다음에 필드ID가 중복되지 않도록 1 증가.
+					pre_set.setAttribute('last-id', fieldid + 1 );
+
+					// 복사할 div 엘리먼트 생성
+					var div = document.createElement('div');
+					// 내용 복사
+					div.innerHTML = pre_set.innerHTML;
+					// 복사된 엘리먼트의 id를 'field-data-XX'가 되도록 지정.
+					div.id = 'field-data-' + fieldid;
+					// selection_content 영역에 내용 변경.
+					// var temp = div.getElementsByClassName('selection_content')[0];
+					//  temp.innerText = "IP :" +ipAdress;
+					var a = div.getElementsByClassName("selection_content2")[0]
+					// var aObj = document.createElement("a");
+					// aObj.innerText = `IP : ${ipAdress}`;
+					// aObj.href = '#'; // 여기 부분에 실제 url을 넣으면 됩니다.
+					// div.appendChild(aObj)
+
+					a.innerText = ipAdress;
+
+					// temp.innerText = x;
+					// delete_box에 삭제할 fieldid 정보 건네기
+					var deleteBox = div.getElementsByClassName('delete_box')[0];
+					// target이라는 속성에 삭제할 div id 저장
+					deleteBox.setAttribute('target',div.id);
+					// #field에 복사한 div 추가.
+					document.getElementById('field').appendChild(div);
+
+				}
+				//add_info(subscribers);
+			}
+			requestXML.send();
+
+		}
+
+		function delete_info(obj) {
+			// 삭제할 ID 정보 찾기
+			const field_data = obj.parentElement.parentElement;
+			const field_data_childs = field_data.childNodes;
+			console.log(field_data_childs[1].innerText);
+			const ip_address = field_data_childs[1].innerText;
+
+			const url = 'http://localhost:3000/deleteIp?ip_address='+ip_address;
+			let requestXML = new XMLHttpRequest();
+			requestXML.open('GET', url);
+			requestXML.setRequestHeader('Content-Type', 'application/json');
+			requestXML.onload = function () {
+
+				var target = obj.parentNode.getAttribute('target');
+				// 삭제할 element 찾기
+				var field = document.getElementById(target);
+				// #field 에서 삭제할 element 제거하기
+				document.getElementById('field').removeChild(field);
+			}
+			requestXML.send();
+
+		}
+
+	</script>
+	<!--<script src="addUser.js"></script>-->
+</head>
+
+<body onload="getIpList()">
+	<!-- WRAPPER -->
+	<div id="wrapper">
+		<!-- NAVBAR -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand">
+				<a href="index.html"><img src="assets/img/logo-dark.png" alt="Klorofil Logo" class="img-responsive logo"></a>
+			</div>
+			<div class="container-fluid">
+				<div class="navbar-btn">
+					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
+				</div>
+				<div style="margin:10px;">
+					<!-- Tab 영역 태그는 ul이고 클래스는 nav와 nav-tabs를 설정한다. -->
+					<ul class="nav nav-tabs">
+						<!-- Tab 아이템이다. 태그는 li과 li > a이다. li태그에 active는 현재 선택되어 있는 탭 메뉴이다. -->
+						<li><a href="index.html" class=""><i data-toggle="tab"></i> <span>HOME</span></a></li>
+						<li><a href="cpu.html" class=""><i data-toggle="tab"></i> <span>CPU</span></a></li>
+						<!-- a 태그의 href는 아래의 tab-content 영역의 id를 설정하고 data-toggle 속성을 tab으로 설정한다. -->
+						<li><a href="memory.html" class=""><i data-toggle="tab"></i> <span>Memory</span></a></li>
+						<li><a href="pageFault.html" class=""><i data-toggle="tab"></i> <span>PageFault</span></a></li>
+						<li><a href="workingSet.html" class=""><i data-toggle="tab"></i> <span>WorkingSet</span></a></li>
+
+					</ul>
+					<!-- Tab이 선택되면 내용이 보여지는 영역이다. -->
+					<!-- 태그는 div이고 class는 tab-content로 설정한다. -->
+
+				</div>
+
+			</div>
+		</nav>
+		<!-- END NAVBAR -->
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar">
+
+
+			<div class="sidebar-scroll">
+				<form class="form-inline" style="margin-top: 30px" action="http://localhost:3000/addIp" method="post">
+				<ul class="nav" style="padding-top: 30px; padding-left: 10px" >
+
+					<div class="form-group mx-sm-3 mb-2" style="float:left">
+						<input type="text" class="form-control"  id="ipAdress" name="ip_address">
+					</div>
+					<button type="submit" class="btn btn-primary mb-2"  class="button" id="button"> Submit</button>
+
+					<div id="pre_set" style="display:none ; float: left" last-id="0">
+						<div class="btn"> <a class="selection_content2" href="#" style="text-decoration:none ; color: white ; " ></a>
+
+						</div>
+
+						<div class="delete_box " >
+							<button onclick="delete_info(this)">remove</button>
+							<!-- <img src="close.png" onclick="delete_info()"> -->
+						</div>
+					</div>
+
+					<div id="field" style=" overflow:auto;">
+
+					</div>
+
+				</ul>
+				</form>
+			</div>
+		</div>
+		<!-- END LEFT SIDEBAR -->
+
+			<div class="main">
+				<!-- MAIN CONTENT -->
+				<div class="main-content">
+					<div class="container-fluid">
+						<h3 class="page-title">Charts</h3>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="panel">
+
+									<!--Table-->
+									<table class="table table-hover table-fixed">
+
+										<!--Table head-->
+										<thead>
+										<tr>
+											<th>PID</th>
+											<th>이름</th>
+											<th>페이지폴트 수 </th>
+											<th>실 메로리 적재량(페이지 수)</th>
+											<th>CPU </th>
+										</tr>
+										</thead>
+										<!--Table head-->
+
+										<!--Table body-->
+										<tbody>
+										<tr>
+											<th scope="row">1</th>
+											<td>gsd-usb-protect</td>
+											<td>3</td>
+											<td>919</td>
+											<td>Bari</td>
+										</tr>
+										<tr>
+											<th scope="row">2</th>
+											<td>gsd-wacom</td>
+											<td>5</td>
+											<td>1843</td>
+											<td>Warsaw</td>
+										</tr>
+										<tr>
+											<th scope="row">3</th>
+											<td>gsd-wwan</td>
+											<td>7</td>
+											<td>727</td>
+											<td>Berlin</td>
+										</tr>
+										<tr>
+											<th scope="row">4</th>
+											<td>gsd-xsettings</td>
+											<td>10</td>
+											<td>1506</td>
+											<td>San Francisco</td>
+										</tr>
+										<tr>
+											<th scope="row">5</th>
+											<td>gsd-disk-utilit</td>
+											<td>6</td>
+											<td>629</td>
+											<td>San Francisco</td>
+										</tr>
+										<tr>
+											<th scope="row">6</th>
+											<td>evolution-alarm</td>
+											<td>408</td>
+											<td>3456</td>
+											<td>San Francisco</td>
+										</tr>
+										<tr>
+											<th scope="row">7</th>
+											<td>gsd-printer</td>
+											<td>25</td>
+											<td>922</td>
+											<td>San Francisco</td>
+										</tr>
+										<tr>
+											<th scope="row">8</th>
+											<td>evolution-addre</td>
+											<td>56</td>
+											<td>763</td>
+											<td>San Francisco</td>
+										</tr>
+										<tr>
+											<th scope="row">9</th>
+											<td>gsd-printer</td>
+											<td>25</td>
+											<td>922</td>
+											<td>San Francisco</td>
+										</tr>
+										<tr>
+											<th scope="row">10</th>
+											<td>gnome-terminal</td>
+											<td>223</td>
+											<td>7717</td>
+											<td>San Francisco</td>
+										</tr>
+
+										</tbody>
+										<!--Table body-->
+
+									</table>
+									<!--Table-->
+
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="panel">
+
+									<canvas id="chart0" style="width:500px; height:550px;">
+
+									</canvas>
+
+									<!--
+									<div class="panel-heading">
+										<h3 class="panel-title">Bar Chart</h3>
+									</div>
+									<div class="panel-body">
+										<div id="demo-bar-chart" class="ct-chart"></div>
+									</div>
+									-->
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="panel">
+									<div class="panel-heading">
+										<h3 class="panel-title">Area Chart</h3>
+									</div>
+									<div class="panel-body">
+										<div id="demo-area-chart" class="ct-chart"></div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="panel">
+									<div class="panel-heading">
+										<h3 class="panel-title">Multiple Chart</h3>
+									</div>
+									<div class="panel-body">
+										<div id="multiple-chart" class="ct-chart"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- END MAIN CONTENT -->
+			</div>
+			<!-- END MAIN -->
+		<script>
+			$(function() {
+				var options;
+
+				var data = {
+					labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+					series: [
+						[200, 380, 350, 320, 410, 450, 570, 400, 555, 620, 750, 900],
+					]
+				};
+
+				// line chart
+				options = {
+					height: "300px",
+					showPoint: true,
+					axisX: {
+						showGrid: false
+					},
+					lineSmooth: false,
+				};
+
+				new Chartist.Line('#demo-line-chart', data, options);
+
+				// bar chart
+				options = {
+					height: "300px",
+					axisX: {
+						showGrid: false
+					},
+				};
+
+				new Chartist.Bar('#demo-bar-chart', data, options);
+
+
+				// area chart
+				options = {
+					height: "270px",
+					showArea: true,
+					showLine: false,
+					showPoint: false,
+					axisX: {
+						showGrid: false
+					},
+					lineSmooth: false,
+				};
+
+				new Chartist.Line('#demo-area-chart', data, options);
+
+
+				// multiple chart
+				var data = {
+					labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+					series: [{
+						name: 'series-real',
+						data: [200, 380, 350, 320, 410, 450, 570, 400, 555, 620, 750, 900],
+					}, {
+						name: 'series-projection',
+						data: [240, 350, 360, 380, 400, 450, 480, 523, 555, 600, 700, 800],
+					}]
+				};
+
+				var options = {
+					fullWidth: true,
+					lineSmooth: false,
+					height: "270px",
+					low: 0,
+					high: 'auto',
+					series: {
+						'series-projection': {
+							showArea: true,
+							showPoint: false,
+							showLine: false
+						},
+					},
+					axisX: {
+						showGrid: false,
+
+					},
+					axisY: {
+						showGrid: false,
+						onlyInteger: true,
+						offset: 0,
+					},
+					chartPadding: {
+						left: 20,
+						right: 20
+					}
+				};
+
+				new Chartist.Line('#multiple-chart', data, options);
+
+			});
+		</script>
+	</div>
+	<!-- END WRAPPER -->
+	<!-- Javascript -->
+	<script src="assets/vendor/jquery/jquery.min.js"></script>
+	<script src="assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="assets/vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js"></script>
+	<script src="assets/vendor/chartist/js/chartist.min.js"></script>
+	<script src="assets/scripts/klorofil-common.js"></script>
+	<script>
+	$(function() {
+		var data, options;
+
+		// headline charts
+		data = {
+			labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+			series: [
+				[23, 29, 24, 40, 25, 24, 35],
+				[14, 25, 18, 34, 29, 38, 44],
+			]
+		};
+
+		options = {
+			height: 300,
+			showArea: true,
+			showLine: false,
+			showPoint: false,
+			fullWidth: true,
+			axisX: {
+				showGrid: false
+			},
+			lineSmooth: false,
+		};
+
+		new Chartist.Line('#headline-chart', data, options);
+
+
+		// visits trend charts
+		data = {
+			labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+			series: [{
+				name: 'series-real',
+				data: [200, 380, 350, 320, 410, 450, 570, 400, 555, 620, 750, 900],
+			}, {
+				name: 'series-projection',
+				data: [240, 350, 360, 380, 400, 450, 480, 523, 555, 600, 700, 800],
+			}]
+		};
+
+		options = {
+			fullWidth: true,
+			lineSmooth: false,
+			height: "270px",
+			low: 0,
+			high: 'auto',
+			series: {
+				'series-projection': {
+					showArea: true,
+					showPoint: false,
+					showLine: false
+				},
+			},
+			axisX: {
+				showGrid: false,
+
+			},
+			axisY: {
+				showGrid: false,
+				onlyInteger: true,
+				offset: 0,
+			},
+			chartPadding: {
+				left: 20,
+				right: 20
+			}
+		};
+
+		new Chartist.Line('#visits-trends-chart', data, options);
+
+
+		// visits chart
+		data = {
+			labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+			series: [
+				[6384, 6342, 5437, 2764, 3958, 5068, 7654]
+			]
+		};
+
+		options = {
+			height: 300,
+			axisX: {
+				showGrid: false
+			},
+		};
+
+		new Chartist.Bar('#visits-chart', data, options);
+
+
+		// real-time pie chart
+		var sysLoad = $('#system-load').easyPieChart({
+			size: 130,
+			barColor: function(percent) {
+				return "rgb(" + Math.round(200 * percent / 100) + ", " + Math.round(200 * (1.1 - percent / 100)) + ", 0)";
+			},
+			trackColor: 'rgba(245, 245, 245, 0.8)',
+			scaleColor: false,
+			lineWidth: 5,
+			lineCap: "square",
+			animate: 800
+		});
+
+		var updateInterval = 3000; // in milliseconds
+
+		setInterval(function() {
+			var randomVal;
+			randomVal = getRandomInt(0, 100);
+
+			sysLoad.data('easyPieChart').update(randomVal);
+			sysLoad.find('.percent').text(randomVal);
+		}, updateInterval);
+
+		function getRandomInt(min, max) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+	});
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+	<script src="https://playground.abysscorp.org/chartjs/livecharts/dist/Chart.min.js"></script>
+	<!--charts-->
+	<script src="autoline_test.js"></script>
+
+	</body>
+</html>
